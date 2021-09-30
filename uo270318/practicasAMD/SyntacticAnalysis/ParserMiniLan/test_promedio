@@ -1,0 +1,6 @@
+begin
+   a=b+4; // a vale 4 y b vale 0
+   promedio(x : a/2 : 4); // x vale 3   
+   PROMEDIO(y:5:a-3); // y vale 0
+   print(x>y); // muestra true
+end

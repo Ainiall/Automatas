@@ -1,0 +1,6 @@
+begin
+	a = 15>9 ? 3/9*6 : 7-2+40/40;
+	print (a);		//imprime 2
+	
+	b=a++;
+end

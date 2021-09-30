@@ -1,0 +1,10 @@
+begin
+a = 21;
+b = 6;
+c = 10;
+d = 15;
+print(a++);		//el resultado es 21 porque primero imprime y luego incrementa
+print(--b);		//el resultado es 5 porque primero decrementa y luego imprime
+print(++c);		//el resultado es 11 porque primero incrementa y luego imprime
+print(d--);		//el resultado es 15 porque primero imprime y luego decrementa
+end

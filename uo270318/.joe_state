@@ -1,0 +1,27 @@
+# JOE state file v1.0
+search
+done
+macros
+done
+files
+	"mensaje_para_uo270318.txt\n"
+done
+find
+done
+replace
+done
+run
+done
+build
+done
+grep
+done
+cmd
+done
+math
+done
+yank
+done
+file_pos
+	1 "mensaje_para_uo270318.txt"
+done

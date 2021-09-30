@@ -1,0 +1,31 @@
+#Vamos a por ello #Empezamos con UOs correctos
+Uo1234
+uo123456
+#UOs incorrectos
+UO123
+UO-1234
+
+#Reales correctos
+3.3E-34
+3e7
+3.
+.3
+# Reales incorrectos
+3
+.
+
+# Emails correctos
+a@uniovi.es
+a.1.2@uniovi.com
+
+# Emails incorrectos
+2a@uniovi.es
+a..b@uniovi.com
+a.@uniovi.es
+
+#Identificadores de MiniLan correctos
+Suma__1
+contador
+#Identificadores de MiniLan incorrectos
+Suma_
+1A

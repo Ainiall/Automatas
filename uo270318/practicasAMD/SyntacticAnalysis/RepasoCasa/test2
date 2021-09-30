@@ -1,0 +1,4 @@
+// Fichero test2
+begin
+   print( 6 - 3 );
+end

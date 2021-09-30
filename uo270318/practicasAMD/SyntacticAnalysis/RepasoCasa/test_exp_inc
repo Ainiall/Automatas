@@ -1,0 +1,8 @@
+// Fichero test8
+begin
+  a = 2;
+  b = (a*-2)/(d+2);
+  b*+;
+  a*-;
+  print(b+a);		//-4.25
+end

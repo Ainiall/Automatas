@@ -1,0 +1,5 @@
+begin
+a = 21;
+b = 6;
+print(a % b);		//el resultado es 3
+end

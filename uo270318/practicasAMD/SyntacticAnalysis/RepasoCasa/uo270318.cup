@@ -1,0 +1,176 @@
+// MiniLan.cup
+// Version para inicial para el Analisis Sintactico 
+import java_cup.runtime.*;
+
+action code {:
+	NewHashMap table = new NewHashMap();
+
+	public Double[] getDoubleVector(String s){
+	String aux = s.replaceAll("[\\s\\-()]", "");
+	String[] parts = aux.split(",");
+	Double[] res = new Double[parts.length];
+	for (int i=0; i<parts.length;i++){
+		res[i] = Double.valueOf(parts[i]);
+	}
+	return res;
+}
+:};
+
+parser code {:
+	public static void main(String args[]) throws Exception {
+		new parser(new Yylex(System.in)).parse();
+	} // End Main
+:} // End parser code
+
+terminal BEGIN, END, PRINT;
+terminal PLUS, MINUS, MULT, DIV, MOD;
+terminal EOS, LP, RP;
+terminal GT, LT, EQ, OR, AND, NOT, NOTEQ;
+terminal Double NUMBER;
+terminal String IDENT;
+terminal SET, ME, PE;
+terminal INC, DEC;
+terminal QM,DD;
+terminal PROMEDIO;
+terminal String VECTOR;
+
+non terminal program, instructions, instruction, sentence, printSentence, assignSentence;
+non terminal Double arithExpr, term, factor;
+non terminal Boolean boolExpr, boolTerm;
+non terminal Double ternaryExpr;
+non terminal Double vectorExpr;
+
+
+program		    ::= BEGIN instructions END              {:	System.out.println("    PARSER:: program <== BEGIN instructions END"); :}
+                ;
+
+instructions	::= instructions instruction            {:	System.out.println("    PARSER:: instructions <== instructions instruction");:} 	
+                | instruction                           {:	System.out.println("    PARSER:: instructions <== instruction");:} 	
+                ;
+
+instruction    	::= sentence EOS                        {:	System.out.println("    PARSER:: instruction <== sentence EOS");:} 
+                ;	
+
+sentence        ::= printSentence                       {:	System.out.println("    PARSER:: sentence <== printSentence ");:} 
+				| assignSentence                        {:	System.out.println("    PARSER:: sentence <== assignSentence ");:} 	
+                ;
+					
+printSentence   ::= PRINT LP arithExpr:a RP             
+					{:	System.out.println("	PARSER:: printSentence <== PRINT (arithExpr<" +a+ ">)"); :}
+				| PRINT LP boolExpr:b RP                
+					{:	System.out.println("	PARSER:: printSentence <== PRINT (boolExpr<" +b+ ">)"); :}
+				| PRINT LP ternaryExpr:t RP                
+					{:	System.out.println("	PARSER:: printSentence <== PRINT (ternaryExpr<" +t+ ">)"); :}
+				| PRINT LP vectorExpr:v RP
+					{:	System.out.println("	PARSER:: printSentence <== PRINT (vectorExpr<" +v+ ">)"); :}
+
+                ;
+				   
+assignSentence  ::= IDENT:id SET arithExpr:v            
+					{: table.put(id,v);
+					System.out.println("	PARSER:: assignSentence <== IDENT <" + id + "> SET arithExpr <" + v + "> "); :}
+				| IDENT:id SET ternaryExpr:v            
+					{: table.put(id,v);
+					System.out.println("	PARSER:: assignSentence <== IDENT <" + id + "> SET ternaryExpr <" + v + "> "); :}
+				| IDENT:id PE arithExpr:v        
+					{: Double n = (Double) table.get(id) + v;
+                    			table.put(id,n);
+                    			System.out.println("	PARSER:: assignSentence <== IDENT <" + id + "> PE arithExpr <" + v + "> "); :}
+                		| IDENT:id ME arithExpr:v   
+					{: Double n = (Double) table.get(id) * v;
+					table.put(id,n);
+					System.out.println("	PARSER:: assignSentence <== IDENT <" + id + "> ME arithExpr <" + v + "> "); :}
+				|PROMEDIO LP IDENT:id DD arithExpr:a1 DD arithExpr:a2 RP          
+					{: Double n= (Double) (a1+a2)/2; 
+					table.put(id,n);
+					System.out.println("	PARSER:: assignSentence <== PROMEDIO arithExpr<"+a1+"> arithExpr<"+a2+">"); :}
+			    ;
+				
+ternaryExpr		::=  boolExpr: b1 QM arithExpr:a1 DD arithExpr:a2
+					{: RESULT= b1?a1:a2;
+					System.out.println("	PARSER:: ternaryExpr<"+RESULT+"> <== QM arithExpr<"+a1+"> DD arithExpr<"+a2+">"); :}
+				;
+			
+vectorExpr		::= VECTOR:v MULT arithExpr:a	
+			{: for(int i=0;i<v.size();i++){
+				n=v[i]*a;
+			}
+			RESULT= n;
+			System.out.println("	PARSER:: vectorExpr<"+RESULT+"> <== VECTOR<" +v+ "> MULT arithExpr<" +a+ ">"); :}
+			;	
+boolExpr        ::=  boolExpr:b1 OR boolTerm:b2        
+					{: RESULT= b1 || b2 ; 
+					System.out.println("	PARSER:: boolExpr<"+RESULT+"> <== boolExpr<"+b1+"> OR boolTerm<"+b2+">"); :} 
+				| boolExpr:b1 AND boolTerm:b2
+					{: RESULT= b1 && b2 ; 
+					System.out.println("	PARSER:: boolExpr<"+RESULT+"> <== boolExpr<"+b1+"> AND boolTerm<"+b2+">"); :} 
+				|NOT  LP boolExpr:b1 RP
+					{: RESULT= !b1;
+					System.out.println("	PARSER:: boolean<"+RESULT+"> <== NOT boolean<"+b1+">"); :}
+                		| boolTerm:b1                         
+					{: RESULT= b1; 
+					System.out.println("	PARSER:: boolExpr<"+RESULT+">"); :} 
+				;
+				 
+boolTerm       ::= arithExpr:n1 LT arithExpr:n2        
+					{: RESULT= n1<n2; 
+					System.out.println("	PARSER:: boolTerm<"+RESULT+"> <== arithExpr<"+n1+"> LT arithExpr<"+n2+">"); :}
+				| arithExpr:n1 GT arithExpr:n2         
+					{: RESULT= n1>n2; 
+					System.out.println("	PARSER:: boolTerm<"+RESULT+"> <== arithExpr<"+n1+"> GT arithExpr<"+n2+">"); :}
+                | arithExpr:n1 EQ arithExpr:n2         
+					{: RESULT= n1.equals(n2); 
+					System.out.println("	PARSER:: boolTerm<"+RESULT+"> <== arithExpr<"+n1+"> EQ arithExpr<"+n2+">"); :}
+				| arithExpr:n1 NOTEQ arithExpr:n2         
+					{: RESULT= !n1.equals(n2); 
+					System.out.println("	PARSER:: boolTerm<"+RESULT+"> <== arithExpr<"+n1+"> NOTEQ arithExpr<"+n2+">"); :}
+				;
+				   
+				
+arithExpr       ::= arithExpr:a PLUS term:t            
+					{: RESULT= a+t; 
+					System.out.println("	PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> PLUS term<"+t+">"); :} 
+				|arithExpr:a MINUS term:t             
+					{: RESULT= a-t; 
+					System.out.println("	PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> MINUS term<"+t+">"); :}
+				|arithExpr:a INC          
+					{: RESULT= a++; 
+					System.out.println("	PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> POST INC"); :}
+				|arithExpr:a DEC          
+					{: RESULT= a--; 
+					System.out.println("	PARSER:: arithExpr<"+RESULT+"> <== arithExpr<"+a+"> POST DEC"); :}
+				| term:t                              
+					{: RESULT= t; 
+					System.out.println("	PARSER:: arithExpr<"+RESULT+"> <== factor<"+t+">"); :}
+                ;
+				
+term            ::= term:t MULT factor:f               
+					{: RESULT= t*f; 
+					System.out.println("	PARSER:: term<"+RESULT+"> <== term<"+t+"> MULT factor<"+f+">"); :} 
+				|term:t DIV factor:f                  
+					{: RESULT= t/f; 
+					System.out.println("	PARSER:: term<"+RESULT+"> <== term<"+t+"> DIV factor<"+f+">"); :} 
+				|term:t MOD factor:f                  
+					{: RESULT= t%f; 
+					System.out.println("	PARSER:: term<"+RESULT+"> <== term<"+t+"> MOD factor<"+f+">"); :} 
+                			|factor:f                            
+					{: RESULT= f; 
+					System.out.println("	PARSER:: term<"+RESULT+"> <== factor<"+f+">"); :}
+                ;
+					
+factor          ::= NUMBER:n1                          
+					{: RESULT= n1; 
+					System.out.println("	PARSER:: factor<"+RESULT+"> <== factor<"+n1+">"); :}
+				|LP arithExpr:n1 RP                  
+					{: RESULT= n1; 
+					System.out.println("	PARSER:: factor<"+RESULT+"> <== arithExpr<"+n1+">"); :}
+				|MINUS factor:n1                      
+					{: RESULT= -n1; 
+					System.out.println("	PARSER:: factor<"+RESULT+"> <== factor<-"+n1+">"); :}
+				|PLUS factor:n1                       
+					{: RESULT= +n1; 
+					System.out.println("	PARSER:: factor<"+RESULT+"> <== factor<"+n1+">"); :}
+				|IDENT:name						   
+					{:RESULT=(Double) table.get(name); 
+					System.out.println("	PARSER:: factor<"+RESULT+"> <== ident<"+name+"> value<"+name+">"); :}
+				;

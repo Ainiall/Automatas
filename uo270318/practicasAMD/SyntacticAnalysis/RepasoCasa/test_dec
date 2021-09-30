@@ -1,0 +1,7 @@
+begin
+a = 21;
+b = 6;
+c = 10;
+d = 15;
+print(d--);		//el resultado es 15 porque primero imprime y luego decrementa
+end

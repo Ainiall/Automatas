@@ -1,0 +1,5 @@
+// Fichero test1
+begin
+  print(3 + 2 *5);
+  print(2 * 4 + 6);
+end
